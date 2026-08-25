@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Central Élite">
+<meta name="theme-color" content="#0a0f1a">
+<title>Central Élite v5</title>
+<style>
+:root{
+  --bg:#0a0f1a;--surface:#111827;--card:#1a2235;--border:#1f2d44;
+  --accent:#00c2ff;--gold:#f0b429;--green:#22c55e;--red:#ef4444;
+  --purple:#a78bfa;--orange:#fb923c;--teal:#2dd4bf;
+  --txt:#e8edf5;--txt2:#8898b0;--txt3:#4a5d78;
+  --r:10px;--font:'Inter',system-ui,-apple-system,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);min-height:100dvh;overflow-x:hidden}
+button{cursor:pointer;border:none;background:none;font-family:var(--font)}
+
+#topbar{position:sticky;top:0;z-index:100;background:rgba(10,15,26,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:10px 14px}
+.logo{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);flex:1}
+.logo span{color:var(--txt2);font-weight:400}
+.topbtn{padding:6px 12px;border-radius:6px;font-size:.72rem;font-weight:700}
+.topbtn.ia{background:#1a2f4a;color:var(--accent)}
+
+#daytabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--surface);scrollbar-width:none}
+#daytabs::-webkit-scrollbar{display:none}
+.dtab{flex:0 0 auto;padding:10px 14px;font-size:.7rem;font-weight:700;color:var(--txt3);border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;text-align:center}
+.dtab .dn{font-size:.58rem;display:block;margin-bottom:1px;opacity:.55}
+.dtab.active{color:var(--accent);border-color:var(--accent)}
+.dtab.tm.active{color:var(--green);border-color:var(--green)}
+.dtab.tg.active{color:var(--purple);border-color:var(--purple)}
+.dtab.ts.active{color:var(--gold);border-color:var(--gold)}
+
+.page{display:none;padding:14px 14px 110px;max-width:680px;margin:0 auto}
+.page.active{display:block}
+
+.day-hero{border-radius:var(--r);padding:15px;margin-bottom:12px;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border)}
+.dh-icon{font-size:1.8rem;flex-shrink:0}
+.dh-name{font-size:1.05rem;font-weight:800;line-height:1.1}
+.dh-sub{font-size:.68rem;color:var(--txt2);margin-top:3px}
+.dh-badge{margin-left:auto;flex-shrink:0;font-size:.6rem;font-weight:700;padding:5px 9px;border-radius:6px;text-align:center;letter-spacing:.04em;text-transform:uppercase}
+.b-gym{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.b-match{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.b-rest{background:rgba(74,93,120,.15);color:var(--txt3);border:1px solid var(--border)}
+.b-active{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.25)}
+
+.sblock{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.sblock-hdr{display:flex;align-items:center;gap:9px;padding:12px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sblock-hdr:hover{background:rgba(255,255,255,.02)}
+.si{font-size:.95rem;flex-shrink:0;width:18px;text-align:center}
+.st{font-size:.8rem;font-weight:700;flex:1}
+.sb{font-size:.6rem;color:var(--txt3);font-weight:600}
+.sc{font-size:.62rem;color:var(--txt3);transition:transform .2s;margin-left:4px}
+.sblock.open .sc{transform:rotate(180deg)}
+.sblock-body{display:none;padding:0 14px 14px}
+.sblock.open .sblock-body{display:block}
+
+.sblock.s-e .sblock-hdr{border-left:3px solid var(--purple)}
+.sblock.s-n .sblock-hdr{border-left:3px solid var(--gold)}
+.sblock.s-s .sblock-hdr{border-left:3px solid var(--green)}
+.sblock.s-r .sblock-hdr{border-left:3px solid var(--accent)}
+
+.row{display:grid;grid-template-columns:1fr auto;align-items:start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.rn{font-size:.79rem;font-weight:600}
+.rno{font-size:.67rem;color:var(--txt2);margin-top:2px;line-height:1.45}
+.rv{font-size:.77rem;font-weight:700;color:var(--accent);text-align:right;white-space:nowrap}
+.rv small{display:block;font-size:.6rem;color:var(--txt3);font-weight:400}
+
+.phase{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin:12px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.phase.teal{color:var(--teal);border-color:rgba(45,212,191,.2)}
+
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.pill{font-size:.67rem;font-weight:600;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--txt2)}
+.pill.p{background:rgba(96,165,250,.1);color:#93c5fd;border-color:rgba(96,165,250,.25)}
+.pill.c{background:rgba(240,180,41,.1);color:var(--gold);border-color:rgba(240,180,41,.25)}
+.pill.g{background:rgba(134,239,172,.1);color:#86efac;border-color:rgba(134,239,172,.25)}
+.pill.k{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.25)}
+
+.supp{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.supp:last-child{border-bottom:none}
+.sic{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.sn{font-size:.78rem;font-weight:700;flex:1}
+.sno{font-size:.63rem;color:var(--txt2);margin-top:1px;line-height:1.4}
+.sd{text-align:right;flex-shrink:0}
+.sd .d{font-size:.77rem;font-weight:700;color:var(--gold)}
+.sd .t{font-size:.6rem;color:var(--txt3);display:block}
+
+.tip{background:rgba(0,194,255,.07);border:1px solid rgba(0,194,255,.2);border-radius:8px;padding:10px 12px;font-size:.72rem;color:#7dd3fc;line-height:1.55;margin-bottom:10px}
+.warn{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.22);border-radius:8px;padding:10px 12px;font-size:.72rem;color:#fca5a5;line-height:1.55;margin-bottom:10px}
+.ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:10px 12px;font-size:.72rem;color:#86efac;line-height:1.55;margin-bottom:10px}
+.sci{background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.18);border-radius:8px;padding:10px 12px;font-size:.69rem;color:#5eead4;line-height:1.55;margin-bottom:10px}
+
+/* rec tools simplificado — solo lo que SÍ hacer */
+.rtool{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.rtool:last-child{border-bottom:none}
+.rt-ic{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.rt-name{font-size:.79rem;font-weight:700;margin-bottom:2px}
+.rt-desc{font-size:.68rem;color:var(--txt2);line-height:1.5}
+.rt-time{font-size:.6rem;font-weight:700;color:var(--accent);margin-top:3px}
+
+/* objectives */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card-title{font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.pbar{margin-bottom:11px}
+.pbar-lbl{display:flex;justify-content:space-between;font-size:.67rem;color:var(--txt2);margin-bottom:4px}
+.pbar-lbl strong{color:var(--txt)}
+.pbar-track{background:var(--border);border-radius:99px;height:6px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .5s}
+.pbar-fill.gold{background:linear-gradient(90deg,var(--gold),var(--orange))}
+.pbar-fill.purple{background:linear-gradient(90deg,var(--purple),var(--accent))}
+
+.cp{border:1px solid var(--border);border-radius:8px;padding:13px;margin-bottom:10px;background:var(--surface)}
+.cp.now{border-color:rgba(0,194,255,.35);background:rgba(0,194,255,.04)}
+.cp-hdr{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.cp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cp-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt2)}
+.cp-title{font-size:.88rem;font-weight:800}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.mrow:last-child{border-bottom:none}
+.mname{font-size:.76rem;font-weight:600}
+.mtarget{font-size:.76rem;font-weight:700;color:var(--gold)}
+
+/* supl fases */
+.fase{border:1px solid var(--border);border-radius:8px;padding:13px;margin-bottom:10px;background:var(--surface)}
+.fase.now{border-color:rgba(0,194,255,.35);background:rgba(0,194,255,.04)}
+.fase-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.fase-name{font-size:.88rem;font-weight:800}
+.fase-when{font-size:.62rem;color:var(--txt2);margin-top:2px}
+.fase-tag{font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap;margin-top:2px}
+.ft-now{background:rgba(0,194,255,.15);color:var(--accent);border:1px solid rgba(0,194,255,.3)}
+.ft-next{background:rgba(240,180,41,.1);color:var(--gold);border:1px solid rgba(240,180,41,.25)}
+.ft-last{background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+
+#ia-panel{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);padding:12px;display:none;max-width:680px;margin:0 auto}
+#ia-panel.visible{display:block}
+#ia-out{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:.77rem;line-height:1.6;color:var(--txt2);max-height:240px;overflow-y:auto;margin-bottom:8px;white-space:pre-wrap;min-height:48px}
+.ia-row{display:flex;gap:8px}
+#ia-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:.79rem;color:var(--txt);font-family:var(--font);resize:none;outline:none;line-height:1.4}
+#ia-input:focus{border-color:var(--accent)}
+#ia-send{background:var(--accent);color:var(--bg);border-radius:8px;padding:0 13px;font-size:.77rem;font-weight:700}
+#ia-close{float:right;font-size:.66rem;color:var(--txt3);margin-bottom:7px;padding:3px 8px;border-radius:5px;background:var(--border)}
+
+@media(min-width:480px){.page{padding:16px 20px 110px}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">CENTRAL <span>ÉLITE</span> · v5</div>
+  <button class="topbtn ia" onclick="toggleIA()">🤖 IA</button>
+</div>
+
+<div id="daytabs">
+  <div class="dtab active"  onclick="showDay('lun')"><span class="dn">LUN</span>Descanso</div>
+  <div class="dtab tg"      onclick="showDay('mar')"><span class="dn">MAR</span>Fuerza 💪</div>
+  <div class="dtab"         onclick="showDay('mie')"><span class="dn">MIÉ</span>Activo</div>
+  <div class="dtab tg"      onclick="showDay('jue')"><span class="dn">JUE</span>Superior</div>
+  <div class="dtab tg"      onclick="showDay('vie')"><span class="dn">VIE</span>Sprint 🏃</div>
+  <div class="dtab"         onclick="showDay('sab')"><span class="dn">SÁB</span>Pre-partido</div>
+  <div class="dtab tm"      onclick="showDay('dom')"><span class="dn">DOM</span>Partido ⚽</div>
+  <div class="dtab ts"      onclick="showDay('obj')"><span class="dn">📊</span>Objetivos</div>
+  <div class="dtab ts"      onclick="showDay('supl')"><span class="dn">💊</span>Suplem.</div>
+  <div class="dtab"          onclick="showDay('log')" style="color:#f0b429"><span class="dn">📓</span>Diario</div>
+</div>
+
+<!-- ═══ LUNES ═══ -->
+<div class="page active" id="page-lun">
+  <div class="day-hero">
+    <div class="dh-icon">😴</div>
+    <div><div class="dh-name">Lunes — Descanso Total</div><div class="dh-sub">Recuperación pasiva · el día más importante para el músculo</div></div>
+    <div class="dh-badge b-rest">OFF</div>
+  </div>
+  <div class="sci">🔬 Los equipos de élite (Real Madrid, Barcelona, Liverpool) no entrenan el lunes post-partido. El daño muscular de un partido alcanza su pico a las 24-48h. Hoy el músculo se reconstruye — si lo respetas, creces. Si no, acumulas fatiga.</div>
+
+  <div class="sblock s-r open">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Recovery — qué hacer hoy</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 8 min</div><div class="rt-desc">Isquio izq. (90s) · Aductor izq. (90s) · Cuádriceps · Gemelos. Presión suave hoy, no agresiva. Objetivo: circulación y drenaje, no movilizar tejido dañado.</div><div class="rt-time">Cuando llegues a casa o por la mañana</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🥾</div>
+        <div><div class="rt-name">Botas Air Cover — Modo A · 60-70% presión · 25-30 min</div><div class="rt-desc">Modo A secuencial. El mejor día de la semana junto con el domingo. Drenan residuos metabólicos del partido. Sentado con piernas ligeramente elevadas, 25-30 min tranquilo.</div><div class="rt-time">Tarde-noche, sentado</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">😴</div>
+        <div><div class="rt-name">Sueño — 8h mínimo</div><div class="rt-desc">La hormona de crecimiento se libera en sueño profundo. Sin sueño, la proteína y la creatina no funcionan al 100%. Ningún suplemento compensa dormir mal.</div><div class="rt-time">Misma hora de siempre</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición</div><div class="sb">descanso · carbos reducidos</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 160g</span><span class="pill c">Carbos: 200g</span><span class="pill g">Grasas: 80g</span><span class="pill k">~2100 kcal</span></div>
+      <div class="tip">Hoy menos carbos (no entrenas) pero más grasa buena: salmón, aguacate, aceite de oliva. Antiinflamatorio natural post-partido.</div>
+      <div class="phase">Desayuno</div>
+      <div class="row"><div><div class="rn">3 huevos revueltos + verdura salteada + fruta</div><div class="rno">Sin avena hoy — menos carbos en descanso</div></div><div class="rv">~480 kcal</div></div>
+      <div class="phase">Comida</div>
+      <div class="row"><div><div class="rn">Salmón o caballa a la plancha + ensalada grande + legumbre pequeña</div><div class="rno">Prioriza grasa de pescado azul hoy — antiinflamatoria</div></div><div class="rv">~620 kcal</div></div>
+      <div class="phase">Merienda</div>
+      <div class="row"><div><div class="rn">Yogur griego SG + almendras</div></div><div class="rv">~290 kcal</div></div>
+      <div class="phase">Cena</div>
+      <div class="row"><div><div class="rn">Huevos + verdura al vapor + boniato pequeño</div></div><div class="rv">~480 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación</div><div class="sb">mantenimiento diario</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div><div class="sno">Con el desayuno. Todos los días sin excepción — incluso en descanso</div></div><div class="sd"><div class="d">5g</div><div class="t">desayuno</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div><div class="sno">Mejora la calidad del sueño y reduce calambres. Antes de dormir</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MARTES ═══ -->
+<div class="page" id="page-mar">
+  <div class="day-hero">
+    <div class="dh-icon">🏋️</div>
+    <div><div class="dh-name">Martes — Fuerza + Explosividad</div><div class="dh-sub">Gimnasio · 21:00–23:00 · ~90 min</div></div>
+    <div class="dh-badge b-gym">FUERZA</div>
+  </div>
+  <div class="sci">🔬 MD+2 (48h post-partido): ventana óptima para estímulo de hipertrofia y fuerza. Liverpool, Atlético y Juventus estructuran este día como la sesión de mayor carga semanal.</div>
+
+  <div class="sblock s-e open">
+    <div class="sblock-hdr"><div class="si">⚡</div><div class="st">Entreno completo</div><div class="sb">~90 min</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="warn">🛡 Antes de empezar: foam roller isquio izq. 60s + aductor izq. 60s. Sin esto no arrancas. Dos roturas en cada zona la temporada pasada.</div>
+
+      <div class="phase">🔥 CALENTAMIENTO + MOVILIDAD CADERA — 12 min</div>
+      <div class="row"><div><div class="rn">Foam roller isquio izq. + aductor izq.</div><div class="rno">60s cada zona. Obligatorio siempre</div></div><div class="rv">2 min</div></div>
+      <div class="row"><div><div class="rn">90/90 Hip Switch</div><div class="rno">Sentado en suelo, piernas en 90°. Rota de lado a lado lento. Abre cápsula articular de cadera</div></div><div class="rv">3×8<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">World's Greatest Stretch</div><div class="rno">Zancada fondo + rotación torso + apertura cadera. El mejor ejercicio de movilidad global del tren inferior</div></div><div class="rv">4 rep<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Band Walk Lateral (goma elástica)</div><div class="rno">Activa glúteo medio. Protege isquio y rodilla. 15 pasos cada lado</div></div><div class="rv">3×15<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Nordic Curl de activación 🛡</div><div class="rno">Baja en 3s, ayúdate al subir. Solo despertar el isquio — no fatigarlo</div></div><div class="rv">2×4</div></div>
+
+      <div class="phase">💪 FUERZA — 40 min</div>
+      <div class="row"><div><div class="rn">Sentadilla trasera con barra</div><div class="rno">Profundidad completa. Principal ejercicio de masa y fuerza del plan</div></div><div class="rv">5×4<small>3 min descanso</small></div></div>
+      <div class="row"><div><div class="rn">Peso Muerto Rumano (RDL)</div><div class="rno">Excéntrico LENTO 3-4s bajando. Reconstruye isquio. El más importante del bloque</div></div><div class="rv">4×6<small>2 min</small></div></div>
+      <div class="row"><div><div class="rn">Hip Thrust con barra</div><div class="rno">Glúteo fuerte = isquio protegido + potencia de arranque y golpeo. 1s de pausa arriba</div></div><div class="rv">4×8<small>90s</small></div></div>
+      <div class="row"><div><div class="rn">Prensa unilateral (un pie)</div><div class="rno">Empieza siempre por la pierna izquierda. Detecta asimetrías</div></div><div class="rv">3×8<small>cada lado, 90s</small></div></div>
+
+      <div class="phase">⚡ EXPLOSIVIDAD — 18 min</div>
+      <div class="row"><div><div class="rn">Box Jump</div><div class="rno">Aterrizaje amortiguado dos pies. Máxima altura. Sin rebotes</div></div><div class="rv">5×3<small>2 min</small></div></div>
+      <div class="row"><div><div class="rn">CMJ — Salto vertical con contramovimiento</div><div class="rno">Tu métrica de progreso: mide altura cada 2 semanas con marca en pared</div></div><div class="rv">4×3<small>2 min</small></div></div>
+      <div class="row"><div><div class="rn">Kettlebell Swing</div><div class="rno">Cadena posterior explosiva. Une fuerza de cadera con velocidad de extensión</div></div><div class="rv">4×10<small>60s</small></div></div>
+
+      <div class="phase teal">🔵 FUERZA DE CADERA — 10 min (al final)</div>
+      <div class="row"><div><div class="rn">Copenhagen Plank isométrico 🛡</div><div class="rno">Tumbado lateral, pie superior en banco, cuerpo recto. Fortalece aductor sin riesgo. Empieza con 15s</div></div><div class="rv">3×15s<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Hip Abduction lateral con goma</div><div class="rno">Tumbado lateral, goma en tobillos. Sube lento, baja lento. Glúteo medio y abductores</div></div><div class="rv">3×15<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Step-up lateral con mancuerna</div><div class="rno">Cajón bajo. Sube de lado. Estabilizadores de cadera en plano frontal</div></div><div class="rv">3×10<small>cada lado</small></div></div>
+
+      <div class="phase">🔴 ABDOMEN + CORE — 10 min (martes: trabajo pesado)</div>
+      <div class="row"><div><div class="rn">Ab Wheel (rueda abdominal)</div><div class="rno">De rodillas, rueda hacia adelante hasta casi el suelo. Vuelve lento. Recto abdominal y core profundo</div></div><div class="rv">4×8</div></div>
+      <div class="row"><div><div class="rn">Hanging Leg Raise (colgado de barra)</div><div class="rno">Sube las rodillas al pecho o piernas rectas. Flexores de cadera + recto abdominal</div></div><div class="rv">3×10</div></div>
+      <div class="row"><div><div class="rn">Dead Bug</div><div class="rno">Estabilización lumbar profunda. Extiende brazo y pierna contrarios lento. Espalda pegada al suelo</div></div><div class="rv">3×8<small>cada lado</small></div></div>
+
+      <div class="phase">💪 ANTEBRAZO + MUÑECA — 6 min (martes: semanas impares 1,3,5...)</div>
+      <div class="row"><div><div class="rn">Wrist Roller (rodillo de muñeca)</div><div class="rno">Sube y baja el peso enrollando solo con las muñecas. Antebrazo completo</div></div><div class="rv">3×arriba-abajo</div></div>
+      <div class="row"><div><div class="rn">Farmer's Carry con mancuernas pesadas</div><div class="rno">Camina 20m con carga máxima. Agarre, antebrazo y core total</div></div><div class="rv">4×20m</div></div>
+      <div class="row"><div><div class="rn">Curl de muñeca con barra (pronación + supinación)</div><div class="rno">Apoya antebrazos en banco. Curl hacia arriba y hacia abajo. Lento</div></div><div class="rv">3×15<small>c/dirección</small></div></div>
+
+      <div class="phase">🧊 VUELTA A LA CALMA — 8 min</div>
+      <div class="row"><div><div class="rn">🛡 Isquio tumbado (izq. primero) + Aductor mariposa + Cuádriceps</div><div class="rno">45s cada postura, estático, sin rebotar. No te vayas sin hacer esto</div></div><div class="rv">obligatorio</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición</div><div class="sb">día de carga · más carbos</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 175-185g</span><span class="pill c">Carbos: 370-400g</span><span class="pill g">Grasas: 70g</span><span class="pill k">~2700 kcal</span></div>
+      <div class="tip">84 kg × 2.2g = ~185g proteína objetivo. Los carbos altos hoy te dan energía para el gym y materiales para crecer.</div>
+      <div class="phase">Desayuno (7-8h)</div>
+      <div class="row"><div><div class="rn">60g avena SG + 3 huevos + plátano + café</div></div><div class="rv">~640 kcal</div></div>
+      <div class="phase">Comida (14h)</div>
+      <div class="row"><div><div class="rn">200g pollo o ternera + 150g arroz + ensalada</div></div><div class="rv">~720 kcal</div></div>
+      <div class="phase">Pre-entreno (19-19:30h) — 1.5-2h antes</div>
+      <div class="row"><div><div class="rn">Batido proteína SG + plátano + puñado arroz inflado SG</div><div class="rno">Digestión rápida. Carbos disponibles cuando entrenas a las 21h</div></div><div class="rv">~380 kcal</div></div>
+      <div class="phase">Post-gym / Cena (23h) — primeros 30 min</div>
+      <div class="row"><div><div class="rn">Pechuga o atún + 200g boniato o patata + brócoli</div><div class="rno">Come en los 30 min post-gym. Lleva tupper si puedes</div></div><div class="rv">~580 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación hoy</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="phase">Mañana (desayuno)</div>
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div><div class="sno">Con el desayuno. Siempre</div></div><div class="sd"><div class="d">5g</div></div></div>
+      <div class="phase">30-45 min antes del entreno (20:15-20:30h)</div>
+      <div class="supp"><div class="sic" style="background:rgba(167,139,250,.12)">🦵</div><div><div class="sn">Colágeno 15g + Vitamina C 200mg</div><div class="sno">Preventivo tendones y ligamentos. Tomar 30-60 min antes — se incorpora al tejido activo durante el ejercicio</div></div><div class="sd"><div class="d">15g+VitC</div><div class="t">pre-gym</div></div></div>
+      <div class="phase">Post-gym (junto a la cena)</div>
+      <div class="supp"><div class="sic" style="background:rgba(96,165,250,.12)">🥛</div><div><div class="sn">Proteína Whey Aislado SG</div><div class="sno">Si la cena no llega a 40g de proteína, completa aquí. Ventana anabólica</div></div><div class="sd"><div class="d">25-30g</div><div class="t">post-gym</div></div></div>
+      <div class="phase">Antes de dormir</div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-r">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Recovery post-gym</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 8 min post-gym</div><div class="rt-desc">Isquio + aductor + cuádriceps + gemelos. Hoy es el día más importante para el foam. 60-90s por zona, lento.</div><div class="rt-time">Antes de salir del gym o al llegar a casa</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🥾</div>
+        <div><div class="rt-name">Botas Air Cover — Modo A · 50-60% presión · 20 min</div><div class="rt-desc">Modo A secuencial post-gym de piernas. Presión algo más baja que post-partido (50-60%). Drenan ácido láctico del entreno de fuerza. Al llegar a casa.</div><div class="rt-time">Al llegar a casa</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">💧</div>
+        <div><div class="rt-name">Hidratación — 500-750ml agua</div><div class="rt-desc">Con pizca de sal + limón. Inmediato al terminar. Sigues bebiendo hasta dormir.</div><div class="rt-time">Inmediato post-gym</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MIÉRCOLES ═══ -->
+<div class="page" id="page-mie">
+  <div class="day-hero">
+    <div class="dh-icon">🏊</div>
+    <div><div class="dh-name">Miércoles — Recuperación Activa</div><div class="dh-sub">Piscina o paseo · 20-35 min</div></div>
+    <div class="dh-badge b-active">ACTIVO</div>
+  </div>
+  <div class="sci">🔬 Recuperación activa a baja intensidad mejora el aclaramiento de lactato y reduce el DOMS frente al reposo total — evidencia consolidada en fútbol profesional (Nédélec et al., Sports Med, 2013).</div>
+
+  <div class="sblock s-r open">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Sesión + Recovery</div><div class="sb">20-35 min</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="ok">Objetivo: activar circulación sin cargar músculo. Sin esfuerzo, sin competición contigo mismo.</div>
+      <div class="rtool">
+        <div class="rt-ic">🏊</div>
+        <div><div class="rt-name">Piscina — 20-30 min crol o braza suave</div><div class="rt-desc">No nadar rápido — moverte en el agua. Añade 5 min en el borde: patada de crol sujeto (isquio sin carga) + flexión lateral de rodilla (aductor). Carga articular cero.</div><div class="rt-time">Opción 1 — la mejor</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🚶</div>
+        <div><div class="rt-name">Paseo 30-35 min (si no hay piscina)</div><div class="rt-desc">Ritmo conversacional. Sin que el corazón supere 130 ppm. Activa circulación sin cargar músculo.</div><div class="rt-time">Opción 2</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 8 min en casa</div><div class="rt-desc">Isquio izq. · Aductor izq. · Gemelos · IT band lateral. Presión media-suave. Esta es la rutina diaria base de toda la temporada.</div><div class="rt-time">En casa, cualquier momento</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🔵</div>
+        <div><div class="rt-name">Movilidad cadera — 10 min en el suelo</div><div class="rt-desc">Frog Stretch 3×45s · 90/90 Hip Switch 3×8c/lado · Pigeon Pose 2×60s c/lado · Cossack Squat 3×6 c/lado. Hoy es el mejor momento de la semana para trabajar rango sin fatiga.</div><div class="rt-time">En casa, en el suelo</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición</div><div class="sb">día intermedio</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 165-175g</span><span class="pill c">Carbos: 250-280g</span><span class="pill g">Grasas: 75g</span><span class="pill k">~2300 kcal</span></div>
+      <div class="row"><div><div class="rn">Desayuno: Huevos + tostada pan SG + fruta</div></div><div class="rv">~480 kcal</div></div>
+      <div class="row"><div><div class="rn">Comida: Salmón + quinoa + ensalada</div><div class="rno">Omega-3 del pescado azul — antiinflamatorio natural</div></div><div class="rv">~630 kcal</div></div>
+      <div class="row"><div><div class="rn">Merienda: Yogur griego SG + fruta</div></div><div class="rv">~270 kcal</div></div>
+      <div class="row"><div><div class="rn">Cena: Pollo + patata + verdura vapor</div></div><div class="rv">~530 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación</div><div class="sb">mantenimiento</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div><div class="sno">Con desayuno. Siempre, todos los días</div></div><div class="sd"><div class="d">5g</div><div class="t">desayuno</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JUEVES ═══ -->
+<div class="page" id="page-jue">
+  <div class="day-hero">
+    <div class="dh-icon">💪</div>
+    <div><div class="dh-name">Jueves — Tren Superior + Core</div><div class="dh-sub">Gimnasio · 21:00–23:00 · ~80 min · MD-3</div></div>
+    <div class="dh-badge b-gym">SUPERIOR</div>
+  </div>
+  <div class="sci">🔬 MD-3 (3 días antes del partido): carga alta de tren superior, mínima de piernas. Chelsea, Bayer Leverkusen y Bayern lo estructuran así — no acumulas fatiga neuromuscular en piernas que te afecte el domingo.</div>
+
+  <div class="sblock s-e open">
+    <div class="sblock-hdr"><div class="si">⚡</div><div class="st">Entreno completo</div><div class="sb">~80 min</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="phase">🔥 CALENTAMIENTO + MOVILIDAD CADERA — 10 min</div>
+      <div class="row"><div><div class="rn">Foam roller hombros + dorsal</div><div class="rno">Moviliza tren superior antes de cargar. 3 min</div></div><div class="rv">3 min</div></div>
+      <div class="row"><div><div class="rn">Hip CARs (Controlled Articular Rotations)</div><div class="rno">De pie, un pie en suelo. Círculo lento y controlado en todo el rango de cadera. Pelvis estable</div></div><div class="rv">3×5<small>cada pierna</small></div></div>
+      <div class="row"><div><div class="rn">Rotación torácica de rodillas</div><div class="rno">Una mano en nuca, rota el codo hacia el techo. Movilidad torácica para press y remo</div></div><div class="rv">2×10<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Face Pull con goma elástica</div><div class="rno">Activa manguito rotador antes de cargar hombros</div></div><div class="rv">2×15</div></div>
+
+      <div class="phase">💪 TREN SUPERIOR — 38 min</div>
+      <div class="row"><div><div class="rn">Press Banca con mancuernas</div><div class="rno">Rango completo. Corpulencia + potencia en choques. Hombros abajo y atrás</div></div><div class="rv">4×6<small>2 min</small></div></div>
+      <div class="row"><div><div class="rn">Remo con barra (o mancuerna unilateral)</div><div class="rno">Espalda ancha = postura bajo presión + fuerza en disputas. Compensa el press siempre</div></div><div class="rv">4×8<small>90s</small></div></div>
+      <div class="row"><div><div class="rn">Press Militar con mancuernas</div><div class="rno">Hombros para cabeceos y disputas aéreas. Fundamental para un central</div></div><div class="rv">3×8<small>90s</small></div></div>
+      <div class="row"><div><div class="rn">Dominadas o Jalón al pecho</div><div class="rno">Espalda alta y ancha. Si no llegas a 6 dominadas, usa jalón con polea</div></div><div class="rv">3×6-8<small>90s</small></div></div>
+
+      <div class="phase">🔩 CORE + ABDOMEN — 18 min</div>
+      <div class="row"><div><div class="rn">Pallof Press anti-rotación</div><div class="rno">Polea o goma, 5-8 kg. Core para resistir giros en duelos y choques</div></div><div class="rv">3×10<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Plancha frontal + lateral alternando</div><div class="rno">45s frontal → 30s lateral der → 30s lateral izq → 30s descanso. x3</div></div><div class="rv">3 rondas</div></div>
+      <div class="row"><div><div class="rn">Cable Crunch (polea alta)</div><div class="rno">De rodillas, polea alta con cuerda. Baja contrayendo el abdomen. Recto abdominal con carga progresiva</div></div><div class="rv">4×12</div></div>
+      <div class="row"><div><div class="rn">Plancha con rotación (thread the needle)</div><div class="rno">En plancha lateral, pasa el brazo por debajo rotando. Oblicuos y estabilización</div></div><div class="rv">3×10<small>cada lado</small></div></div>
+
+      <div class="phase">🦴 CUELLO — 6 min (jueves: semanas impares 1,3,5...)</div>
+      <div class="row"><div><div class="rn">Resistencia manual isométrica — 4 direcciones</div><div class="rno">Con tu mano en la cabeza, empuja y resiste sin mover. Frontal, posterior, lateral der, lateral izq. 10s cada una</div></div><div class="rv">3×10s<small>cada dirección</small></div></div>
+      <div class="row"><div><div class="rn">Neck Harness (arnés de cuello) o toalla + placa</div><div class="rno">Si tienes arnés: flexión y extensión de cuello con carga ligera. Sin arnés: toalla en nuca, sujeta los extremos con manos y resiste</div></div><div class="rv">3×12<small>carga mínima</small></div></div>
+      <div class="tip" style="margin-top:8px">🦴 El cuello fuerte protege en cabeceos, choques y disputas aéreas. Empieza siempre con carga mínima — es una zona delicada.<br><br>📅 <strong>Semanas pares (2,4,6...):</strong> sustituye el cuello por ANTEBRAZO — Wrist Roller 3 series + Farmer's Carry 4×20m + Curl muñeca 3×15.</div>
+
+      <div class="phase teal">🔵 FUERZA DE CADERA — 8 min (al final)</div>
+      <div class="row"><div><div class="rn">Copenhagen Plank isométrico 🛡</div><div class="rno">Pie superior en banco, cuerpo recto. Aductor sin carga dinámica. Sube progresivamente el tiempo</div></div><div class="rv">3×15-20s<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Estiramiento psoas (media luna)</div><div class="rno">Rodilla en suelo, pie trasero arriba. Empuja cadera adelante. Flexor de cadera crucial para sprint</div></div><div class="rv">2×45s<small>cada lado</small></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición</div><div class="sb">día de entreno</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 175-185g</span><span class="pill c">Carbos: 340-370g</span><span class="pill g">Grasas: 70g</span><span class="pill k">~2650 kcal</span></div>
+      <div class="row"><div><div class="rn">Desayuno: Avena SG + 3 huevos + plátano</div></div><div class="rv">~640 kcal</div></div>
+      <div class="row"><div><div class="rn">Comida: Ternera o pollo + arroz + ensalada</div></div><div class="rv">~720 kcal</div></div>
+      <div class="row"><div><div class="rn">Pre-entreno (19:30h): Batido + plátano</div><div class="rno">1.5h antes. Digestión rápida</div></div><div class="rv">~370 kcal</div></div>
+      <div class="row"><div><div class="rn">Post-gym / Cena: Pollo + boniato + verdura</div></div><div class="rv">~570 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación hoy</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div></div><div class="sd"><div class="d">5g</div><div class="t">desayuno</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(167,139,250,.12)">🦵</div><div><div class="sn">Colágeno 15g + Vitamina C 200mg</div><div class="sno">30-45 min antes del gym</div></div><div class="sd"><div class="d">15g+VitC</div><div class="t">20:15-20:30h</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(96,165,250,.12)">🥛</div><div><div class="sn">Proteína Whey SG (si falta en cena)</div></div><div class="sd"><div class="d">25-30g</div><div class="t">post-gym</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-r">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Recovery</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 6 min post-gym</div><div class="rt-desc">Hoy hombros + dorsal + trapecios (tren superior cargado). Más isquio + aductor izq. de rutina diaria.</div><div class="rt-time">Post-gym o al llegar a casa</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">💧</div>
+        <div><div class="rt-name">Hidratación post-gym</div><div class="rt-desc">500ml agua con pizca de sal + limón. Inmediato.</div><div class="rt-time">Al terminar</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VIERNES ═══ -->
+<div class="page" id="page-vie">
+  <div class="day-hero">
+    <div class="dh-icon">🏃</div>
+    <div><div class="dh-name">Viernes — Sprint + Prevención</div><div class="dh-sub">Campo/Gym · 21:00–23:00 · ~75 min · MD-2</div></div>
+    <div class="dh-badge b-gym">SPRINT</div>
+  </div>
+  <div class="sci">🔬 MD-2 (2 días antes del partido): Barcelona y Bayern usan sprints cortos de alta calidad, bajo volumen. Mantienen activación neuromuscular sin acumular fatiga. El objetivo es llegar "encendido" al partido sin llegar cargado.</div>
+
+  <div class="sblock s-e open">
+    <div class="sblock-hdr"><div class="si">⚡</div><div class="st">Entreno completo</div><div class="sb">~75 min</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="phase">🔥 CALENTAMIENTO + MOVILIDAD CADERA — 14 min (crítico antes de sprintar)</div>
+      <div class="row"><div><div class="rn">Foam roller isquio izq. + aductor izq.</div><div class="rno">60s cada zona. OBLIGATORIO antes de cualquier sprint</div></div><div class="rv">2 min</div></div>
+      <div class="row"><div><div class="rn">Trote suave progresivo</div><div class="rno">5 min al 50-60%. Sin esto no arranques a sprintar</div></div><div class="rv">5 min</div></div>
+      <div class="row"><div><div class="rn">World's Greatest Stretch</div><div class="rno">5 rep lentas cada lado. Cadera + torso abiertos antes del sprint</div></div><div class="rv">5 rep<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Leg Swings — frontal y lateral</div><div class="rno">Agarrado a pared. 10 balanceos hacia adelante + 10 hacia el lado. Cada pierna</div></div><div class="rv">10+10<small>cada pierna</small></div></div>
+      <div class="row"><div><div class="rn">Skipping + talones + shuffle lateral</div><div class="rno">Activa sistema nervioso central pre-sprint. 20m de cada</div></div><div class="rv">2×20m</div></div>
+
+      <div class="phase">🏃 SPRINT — 25 min · BAJO VOLUMEN, ALTA CALIDAD</div>
+      <div class="tip">Solo 9 sprints totales. Calidad sobre cantidad. Si en algún sprint notas el isquio: para. No existe sprint que valga una rotura.</div>
+      <div class="row"><div><div class="rn">Sprint 20m aceleración pura</div><div class="rno">Desde parado. 95% intensidad. Recuperación COMPLETA — 3 min mínimo entre sprints</div></div><div class="rv">5×20m<small>3 min c/u</small></div></div>
+      <div class="row"><div><div class="rn">Sprint 30m con salida defensiva</div><div class="rno">Posición de central, giras y arrancas. Simula el duelo real en partido</div></div><div class="rv">4×30m<small>3 min c/u</small></div></div>
+
+      <div class="phase">🔴 ABDOMEN RÁPIDO — 8 min (al inicio del bloque prevención)</div>
+      <div class="row"><div><div class="rn">L-sit en paralelas o suelo</div><div class="rno">Sujeta el cuerpo con piernas extendidas al frente. Core isométrico total. Empieza con 5s</div></div><div class="rv">4×5-15s</div></div>
+      <div class="row"><div><div class="rn">Dragon Flag progresivo (en banco)</div><div class="rno">Tumbado boca arriba, sujeta el banco. Baja el cuerpo recto lentamente. El ejercicio de core más duro. Empieza con rodillas dobladas</div></div><div class="rv">3×4-6</div></div>
+
+      <div class="phase">🛡 PREVENCIÓN — 18 min (NUNCA OMITIR)</div>
+      <div class="row"><div><div class="rn">Nordic Curl completo — excéntrico 4s 🛡🛡</div><div class="rno">Baja en 4s controlado. Reduce rotura de isquio un 51% (Petersen, AJSM). El más importante. El excéntrico lento carga el tendón del isquio progresivamente — es el estímulo que adapta el tejido conectivo</div></div><div class="rv">3×5<small>2 min</small></div></div>
+      <div class="row"><div><div class="rn">Isométrico de isquio en ángulo medio 🛡</div><div class="rno">Tumbado boca abajo, dobla la rodilla a 45°. Alguien sujeta o usa goma fija. Aguanta 30s sin mover. El isométrico carga el tendón sin elongarlo — adaptación del ligamento sin riesgo</div></div><div class="rv">3×30s<small>cada pierna</small></div></div>
+      <div class="row"><div><div class="rn">Copenhagen Plank isométrico — aductor 🛡</div><div class="rno">Pie superior en banco, cuerpo recto. 20s. Carga isométrica directa sobre el aductor izq. — el tendón se adapta bajo tensión estática antes que bajo movimiento dinámico</div></div><div class="rv">3×20s<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Isométrico de tobillo en eversión 🛡</div><div class="rno">Sentado, pie en el suelo. Empuja el borde externo del pie contra una pared o mancuerna. Aguanta 20s. Carga el ligamento lateral del tobillo derecho sin rango de movimiento — la forma más segura de fortalecer el tejido que se esguinzó</div></div><div class="rv">3×20s<small>tobillo der.</small></div></div>
+      <div class="row"><div><div class="rn">Calf raise excéntrico un pie — tendón Aquiles</div><div class="rno">Baja en 4-5s. El excéntrico lento es el estímulo más potente para el tendón de Aquiles y el tobillo. Empieza por el derecho</div></div><div class="rv">3×10<small>cada pie</small></div></div>
+      <div class="row"><div><div class="rn">Propriocepción tobillo derecho 🛡</div><div class="rno">Un pie, ojos cerrados, 45s. Superficie inestable si tienes. Entrena la respuesta neuromuscular que evita el esguince</div></div><div class="rv">3×45s</div></div>
+
+      <div class="phase teal">🔵 FUERZA DE CADERA — 6 min (al final, en el suelo)</div>
+      <div class="row"><div><div class="rn">Copenhagen Plank isométrico 🛡</div><div class="rno">Pie en banco, cuerpo recto. 15-20s. Aductor sin impacto</div></div><div class="rv">3×15-20s<small>cada lado</small></div></div>
+      <div class="row"><div><div class="rn">Hip Abduction lateral con goma</div><div class="rno">Tumbado lateral, sube lento. Glúteo medio y abductores</div></div><div class="rv">2×12<small>cada lado</small></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición</div><div class="sb">entreno + pre-carga domingo</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 175-185g</span><span class="pill c">Carbos: 360-380g</span><span class="pill g">Grasas: 70g</span><span class="pill k">~2650 kcal</span></div>
+      <div class="row"><div><div class="rn">Desayuno: Avena SG + 3 huevos + plátano</div></div><div class="rv">~640 kcal</div></div>
+      <div class="row"><div><div class="rn">Comida: Atún o salmón + arroz + ensalada</div></div><div class="rv">~690 kcal</div></div>
+      <div class="row"><div><div class="rn">Pre-entreno (19:30h): Batido + plátano</div></div><div class="rv">~370 kcal</div></div>
+      <div class="row"><div><div class="rn">Cena (un poco más ligera): Pollo + boniato + verdura</div><div class="rno">Mañana es sábado de carga — no necesitas cargar doble hoy</div></div><div class="rv">~540 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación hoy</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div></div><div class="sd"><div class="d">5g</div><div class="t">desayuno</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(167,139,250,.12)">🦵</div><div><div class="sn">Colágeno 15g + Vitamina C 200mg</div><div class="sno">30-45 min antes del entreno</div></div><div class="sd"><div class="d">15g+VitC</div><div class="t">20:15h</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(96,165,250,.12)">🥛</div><div><div class="sn">Proteína Whey SG (si falta en cena)</div></div><div class="sd"><div class="d">25-30g</div><div class="t">post-gym</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-r">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Recovery — prepara el domingo</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 10 min post-sprint</div><div class="rt-desc">Isquio izq. (90s) + Aductor izq. (90s) + Gemelos + Cuádriceps. Más tiempo en isquio izq. que en el resto.</div><div class="rt-time">Antes de salir del campo o gym</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">💧</div>
+        <div><div class="rt-name">Hidratación + electrolitos</div><div class="rt-desc">500-750ml agua con pizca de sal + limón. El viernes por la noche es la más importante de la semana: 8h de sueño mínimo para rendir el domingo.</div><div class="rt-time">Inmediato post-entreno</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SÁBADO ═══ -->
+<div class="page" id="page-sab">
+  <div class="day-hero">
+    <div class="dh-icon">🔋</div>
+    <div><div class="dh-name">Sábado — Carga Pre-Partido</div><div class="dh-sub">Descanso activo + glucógeno · MD-1</div></div>
+    <div class="dh-badge b-rest">PRE-PARTIDO</div>
+  </div>
+  <div class="sci">🔬 MD-1 en élite: máximo 20-30 min de activación muy suave + carga de carbohidratos. Ningún equipo de Premier League, LaLiga o Bundesliga entrena con carga alta el día antes del partido.</div>
+
+  <div class="sblock s-r open">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Activación + Recovery</div><div class="sb">15-20 min máximo</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="warn">🚨 Cero esfuerzo intenso hoy. Sin gym, sin carreras, sin esfuerzo. El músculo necesita llegar fresco al domingo.</div>
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller suave — 5 min</div><div class="rt-desc">Isquio izq. + Aductor izq. + Gemelos. Presión ligera. Solo mantener circulación.</div><div class="rt-time">Mañana o tarde</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🥾</div>
+        <div><div class="rt-name">Botas Air Cover — Modo B · 40-50% presión · 20 min</div><div class="rt-desc">Modo B (pulsante/intermitente) hoy — más estimulante que el A, ideal como activación pre-partido. Presión más baja que post-partido. Piernas ligeras para mañana.</div><div class="rt-time">Tarde-noche</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🔵</div>
+        <div><div class="rt-name">Movilidad articular — 10 min</div><div class="rt-desc">90/90 Hip Switch · Leg Swings frontales y laterales · Círculos de tobillo. Sin carga, solo movimiento articular. Articulaciones calientes para el calentamiento de mañana.</div><div class="rt-time">Cualquier momento</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sblock s-n">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición — Carga de glucógeno</div><div class="sb">el más importante de la semana</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="pills"><span class="pill p">Prot: 160-170g</span><span class="pill c">Carbos: 370-400g ⬆</span><span class="pill g">Grasas: 55g ⬇</span><span class="pill k">~2550 kcal</span></div>
+      <div class="tip">Subes carbos, bajas grasas. Llenas los depósitos de glucógeno muscular para el partido. Poca fibra en la cena — sin brócoli, legumbres ni mucha verdura cruda.</div>
+      <div class="row"><div><div class="rn">Desayuno: Avena SG + 3 huevos + plátano + miel</div></div><div class="rv">~670 kcal</div></div>
+      <div class="row"><div><div class="rn">Comida: Pasta SG o arroz + pollo + tomate natural</div><div class="rno">Porción generosa de pasta o arroz. Clásico carga de carbos de élite</div></div><div class="rv">~780 kcal</div></div>
+      <div class="row"><div><div class="rn">Merienda: Pan SG + pechuga + fruta</div></div><div class="rv">~360 kcal</div></div>
+      <div class="row"><div><div class="rn">Cena ligera y fácil: Arroz + pechuga + zanahoria cocida</div><div class="rno">Sin fibra dura. Estómago limpio y glucógeno lleno para mañana</div></div><div class="rv">~520 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div></div><div class="sd"><div class="d">5g</div><div class="t">desayuno</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato 300mg</div><div class="sno">Sueño reparador antes del partido. Fundamental</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DOMINGO ═══ -->
+<div class="page" id="page-dom">
+  <div class="day-hero">
+    <div class="dh-icon">⚽</div>
+    <div><div class="dh-name">Domingo — Partido</div><div class="dh-sub">Competición · 11:00 · Salir a dominar</div></div>
+    <div class="dh-badge b-match">PARTIDO</div>
+  </div>
+
+  <div class="sblock s-n open">
+    <div class="sblock-hdr"><div class="si">🥗</div><div class="st">Nutrición — Timing exacto</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="phase">⏰ 8:00–8:30h — Una sola comida pre-partido</div>
+      <div class="row"><div><div class="rn">150g arroz blanco + 150g pechuga de pollo a la plancha + AOVE</div><div class="rno">Simple, fácil de digerir. Si no tienes mucha hambre: arroz con atún en lata SG. Come despacio</div></div><div class="rv">~550 kcal</div></div>
+      <div class="phase">⏰ 10:00h — 1 hora antes</div>
+      <div class="row"><div><div class="rn">1 plátano</div><div class="rno">Nada más. Si no tienes hambre, con esto es suficiente</div></div><div class="rv">~90 kcal</div></div>
+      <div class="phase">⏰ 10:15h — Café solo (si lo tomas habitualmente)</div>
+      <div class="row"><div><div class="rn">Café espresso solo</div><div class="rno">Solo si lo tomas habitualmente — no estrenes el café el día del partido</div></div><div class="rv">activación</div></div>
+      <div class="phase">⏰ En el campo — Hidratación</div>
+      <div class="row"><div><div class="rn">Agua. Sorbos cada 15-20 min</div><div class="rno">Sin más. Sin geles, sin isotónicos complicados. Agua y ya</div></div><div class="rv">500ml</div></div>
+      <div class="phase">✅ Post-partido — primeros 30 min</div>
+      <div class="row"><div><div class="rn">Batido proteína 30g SG + plátano</div><div class="rno">Ventana anabólica. Primeros 30 min son críticos para recuperar</div></div><div class="rv">~340 kcal</div></div>
+      <div class="phase">~13:30h — Comida post-partido</div>
+      <div class="row"><div><div class="rn">Arroz + pollo o ternera + verdura + fruta</div><div class="rno">Comida normal 1-2h después. Recarga glucógeno</div></div><div class="rv">~720 kcal</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-e">
+    <div class="sblock-hdr"><div class="si">🔥</div><div class="st">Calentamiento personal pre-partido</div><div class="sb">además del del equipo</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="tip">10 min antes del calentamiento general. Pueden evitar una rotura.</div>
+      <div class="row"><div><div class="rn">Foam roller isquio izq. + aductor izq.</div><div class="rno">60s cada zona</div></div><div class="rv">obligatorio</div></div>
+      <div class="row"><div><div class="rn">Hip CARs + Leg Swings</div><div class="rno">3 círculos lentos cada pierna + 8 balanceos frontales + 8 laterales</div></div><div class="rv">3 min</div></div>
+      <div class="row"><div><div class="rn">Nordic Curl de activación 🛡</div><div class="rno">3 reps muy suaves. Solo despertar el isquio</div></div><div class="rv">1×3</div></div>
+      <div class="row"><div><div class="rn">Band Walk lateral</div><div class="rno">10 pasos cada lado. Activa glúteo medio</div></div><div class="rv">1×10</div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-s">
+    <div class="sblock-hdr"><div class="si">💊</div><div class="st">Suplementación día de partido</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.12)">⚡</div><div><div class="sn">Creatina 5g</div><div class="sno">Con el desayuno de las 8h</div></div><div class="sd"><div class="d">5g</div><div class="t">8:00h</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(167,139,250,.12)">🦵</div><div><div class="sn">Colágeno 15g + Vitamina C</div><div class="sno">Con el desayuno. 2.5h antes = tiempo para que llegue a las articulaciones</div></div><div class="sd"><div class="d">15g+VitC</div><div class="t">8:00h</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(240,180,41,.1)">☕</div><div><div class="sn">Cafeína / café solo</div><div class="sno">45-60 min antes del partido. Mejora potencia, velocidad de reacción y resistencia a la fatiga</div></div><div class="sd"><div class="d">200mg</div><div class="t">10:00-10:15h</div></div></div>
+      <div class="supp"><div class="sic" style="background:rgba(34,197,94,.1)">🌙</div><div><div class="sn">Magnesio bisglicinato</div></div><div class="sd"><div class="d">300mg</div><div class="t">noche</div></div></div>
+    </div>
+  </div>
+
+  <div class="sblock s-r">
+    <div class="sblock-hdr"><div class="si">🔄</div><div class="st">Recovery post-partido</div><div class="sb">crítico</div><div class="sc">▼</div></div>
+    <div class="sblock-body">
+      <div class="warn">🛡 Momento más importante de la semana para el isquio y aductor. No te vayas del campo sin al menos el foam roller.</div>
+      <div class="rtool">
+        <div class="rt-ic">🧻</div>
+        <div><div class="rt-name">Foam Roller — 8-10 min en vestuario</div><div class="rt-desc">Isquio izq. 90s + Aductor izq. 90s + Cuádriceps + Gemelos. Si notaste tirón: 2 min extra en esa zona.</div><div class="rt-time">Inmediato en vestuario</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">🥾</div>
+        <div><div class="rt-name">Botas Air Cover — Modo A · 60-70% presión · 25-30 min</div><div class="rt-desc">Modo A (secuencial ascendente, pie→muslo). El mejor momento de la semana para las botas. Junto con el lunes. Sentado con piernas ligeramente elevadas. La presión debe sentirse como un abrazo firme, no dolorosa.</div><div class="rt-time">Al llegar a casa</div></div>
+      </div>
+      <div class="rtool">
+        <div class="rt-ic">💧</div>
+        <div><div class="rt-name">Rehidratación inmediata</div><div class="rt-desc">500-750ml agua con pizca de sal + limón. Sigues bebiendo las siguientes 3-4h.</div><div class="rt-time">Inmediato post-partido</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OBJETIVOS ═══ -->
+<div class="page" id="page-obj">
+  <div class="card">
+    <div class="card-title"><div class="cdot" style="background:var(--gold)"></div>Objetivo Final — Junio 2027</div>
+    <p style="font-size:.76rem;color:var(--txt2);line-height:1.6;margin-bottom:14px">Partimos de ~84 kg, 186 cm. El objetivo no es volumen máximo sino músculo limpio que se note: espalda ancha, pecho y brazos marcados, sin perder velocidad ni agilidad. 9 meses: septiembre 2026 → junio 2027.</p>
+    <div class="pbar"><div class="pbar-lbl"><strong>🛡 Temporada SIN rotura isquio/aductor</strong><span>el objetivo madre</span></div><div class="pbar-track"><div class="pbar-fill" style="width:0%"></div></div></div>
+    <div class="pbar"><div class="pbar-lbl"><strong>⚖️ Peso: 84 → 88-90 kg (masa limpia)</strong><span>+4-6 kg músculo real</span></div><div class="pbar-track"><div class="pbar-fill gold" style="width:0%"></div></div></div>
+    <div class="pbar"><div class="pbar-lbl"><strong>🦵 Sentadilla: +20-25 kg de RM</strong><span>mide en sept.</span></div><div class="pbar-track"><div class="pbar-fill purple" style="width:0%"></div></div></div>
+    <div class="pbar"><div class="pbar-lbl"><strong>⬆️ Salto vertical CMJ: +5-7 cm</strong><span>mide en sept.</span></div><div class="pbar-track"><div class="pbar-fill" style="width:0%"></div></div></div>
+    <div class="pbar"><div class="pbar-lbl"><strong>🏃 Sprint 30m: bajar 0.3-0.5s</strong><span>mide en sept.</span></div><div class="pbar-track"><div class="pbar-fill gold" style="width:0%"></div></div></div>
+    <div class="ok">88-90 kg con 186 cm = físico fuerte, espalda ancha, sin estar tosco. Puedes seguir siendo rápido y ágil. Es el punto óptimo para un central de tu altura.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="cdot" style="background:var(--accent)"></div>Checkpoints</div>
+    <div class="cp now">
+      <div class="cp-hdr"><div class="cp-dot" style="background:var(--accent);box-shadow:0 0 8px rgba(0,194,255,.5)"></div><div><div class="cp-lbl">Ahora · Agosto-Septiembre 2026</div><div class="cp-title">📍 Punto de partida — Mide hoy</div></div></div>
+      <div class="mrow"><div class="mname">Peso en ayunas</div><div class="mtarget">~84 kg</div></div>
+      <div class="mrow"><div class="mname">Sprint 30m (cronómetro, parado)</div><div class="mtarget">____ s</div></div>
+      <div class="mrow"><div class="mname">Salto CMJ (marca en pared)</div><div class="mtarget">____ cm</div></div>
+      <div class="mrow"><div class="mname">Sentadilla 5RM estimada</div><div class="mtarget">____ kg</div></div>
+      <div class="mrow"><div class="mname">Press banca 5RM estimada</div><div class="mtarget">____ kg</div></div>
+      <div class="mrow"><div class="mname">Perímetro bíceps tensado</div><div class="mtarget">____ cm</div></div>
+    </div>
+    <div class="cp">
+      <div class="cp-hdr"><div class="cp-dot" style="background:var(--gold)"></div><div><div class="cp-lbl">Checkpoint · Diciembre 2026 — 3 meses</div><div class="cp-title">💪 ¿Estamos en camino?</div></div></div>
+      <div class="mrow"><div class="mname">Peso</div><div class="mtarget">85.5-86 kg</div></div>
+      <div class="mrow"><div class="mname">Sentadilla</div><div class="mtarget">+5-8 kg RM</div></div>
+      <div class="mrow"><div class="mname">CMJ</div><div class="mtarget">+2-3 cm</div></div>
+      <div class="mrow"><div class="mname">Sprint 30m</div><div class="mtarget">-0.1 a -0.2s</div></div>
+      <div class="mrow"><div class="mname">Isquio/aductor</div><div class="mtarget">Sin roturas ✅</div></div>
+    </div>
+    <div class="cp">
+      <div class="cp-hdr"><div class="cp-dot" style="background:var(--green)"></div><div><div class="cp-lbl">Checkpoint · Marzo 2027 — 6 meses</div><div class="cp-title">🚀 Máxima potencia</div></div></div>
+      <div class="mrow"><div class="mname">Peso</div><div class="mtarget">86.5-88 kg</div></div>
+      <div class="mrow"><div class="mname">Sentadilla</div><div class="mtarget">+12-18 kg RM</div></div>
+      <div class="mrow"><div class="mname">CMJ</div><div class="mtarget">+3-5 cm</div></div>
+      <div class="mrow"><div class="mname">Sprint 30m</div><div class="mtarget">-0.2 a -0.3s</div></div>
+      <div class="mrow"><div class="mname">Isquio/aductor</div><div class="mtarget">Sin roturas ✅</div></div>
+    </div>
+    <div class="cp">
+      <div class="cp-hdr"><div class="cp-dot" style="background:var(--purple)"></div><div><div class="cp-lbl">Cierre · Junio 2027 — 9 meses</div><div class="cp-title">🏆 Evaluación final</div></div></div>
+      <div class="mrow"><div class="mname">Peso</div><div class="mtarget">88-90 kg</div></div>
+      <div class="mrow"><div class="mname">Sentadilla</div><div class="mtarget">+20-25 kg RM</div></div>
+      <div class="mrow"><div class="mname">CMJ</div><div class="mtarget">+5-7 cm</div></div>
+      <div class="mrow"><div class="mname">Sprint 30m</div><div class="mtarget">-0.3 a -0.5s</div></div>
+      <div class="mrow"><div class="mname">Isquio/aductor</div><div class="mtarget">Temporada limpia ✅</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUPLEMENTACIÓN ═══ -->
+<div class="page" id="page-supl">
+  <div class="day-hero">
+    <div class="dh-icon">💊</div>
+    <div><div class="dh-name">Suplementación por Fases</div><div class="dh-sub">Solo lo que tiene evidencia real · 3 fases · 9 meses</div></div>
+    <div class="dh-badge b-active">3 FASES</div>
+  </div>
+
+  <div class="sci">🔬 Principio base: la mayoría de suplementos tienen evidencia débil o nula. Solo unos pocos tienen evidencia fuerte (+++). Aquí solo esos, en el momento que más impacto tienen. Menos es más.</div>
+
+  <div class="fase now">
+    <div class="fase-hdr">
+      <div><div class="fase-name">Fase 1 — Base y Protección</div><div class="fase-when">Septiembre → Noviembre 2026 · 3 meses</div></div>
+      <div class="fase-tag ft-now">AHORA</div>
+    </div>
+    <div class="ok">Empiezas de cero. 4 suplementos. El objetivo es establecer la base metabólica y proteger los tejidos que se han roto antes.</div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(240,180,41,.12)">⚡</div>
+      <div><div class="sn">Creatina Monohidrato SG — 5g/día</div><div class="sno">Con el desayuno, todos los días. Sin ciclar, sin carga. El suplemento con mayor evidencia para fuerza, potencia, velocidad y masa (+++ meta-análisis Cochrane). Necesita 3-4 semanas para saturar el músculo.</div></div>
+      <div class="sd"><div class="d">5g</div><div class="t">desayuno</div><div class="t">siempre</div></div>
+    </div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(96,165,250,.12)">🥛</div>
+      <div><div class="sn">Proteína Whey Aislado SG</div><div class="sno">Solo si no llegas a 175-185g de proteína con la dieta. 84kg × 2.2g = ~185g objetivo. Úsala post-gym o post-partido para cerrar la ventana anabólica. Es comida en polvo, no magia.</div></div>
+      <div class="sd"><div class="d">25-30g</div><div class="t">post-gym</div><div class="t">post-partido</div></div>
+    </div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(167,139,250,.12)">🦵</div>
+      <div><div class="sn">Colágeno Hidrolizado + Vitamina C — 15g + 200mg</div><div class="sno">Con tu historial de 4 roturas musculares, esto es preventivo prioritario. El colágeno alimenta tendones, fascias y ligamentos. La VitC es imprescindible para la síntesis. CRÍTICO: tomar 30-60 min antes del entreno (Shaw et al. 2017, Am J Clin Nutr).</div></div>
+      <div class="sd"><div class="d">15g+VitC</div><div class="t">pre-gym</div><div class="t">mar/jue/vie</div></div>
+    </div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(34,197,94,.1)">🌙</div>
+      <div><div class="sn">Magnesio Bisglicinato — 300mg/noche</div><div class="sno">Mejora calidad del sueño (más recuperación) y reduce calambres. La forma bisglicinato no da digestivos. Evita el óxido (el barato de supermercado que no funciona igual).</div></div>
+      <div class="sd"><div class="d">300mg</div><div class="t">antes dormir</div><div class="t">siempre</div></div>
+    </div>
+  </div>
+
+  <div class="fase">
+    <div class="fase-hdr">
+      <div><div class="fase-name">Fase 2 — Rendimiento</div><div class="fase-when">Diciembre 2026 → Febrero 2027 · 3 meses</div></div>
+      <div class="fase-tag ft-next">PRÓXIMA</div>
+    </div>
+    <div class="tip">Cuando fase 1 sea automática (semanas 10-12), añades solo uno más: la cafeína de forma selectiva.</div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(240,180,41,.12)">⚡</div>
+      <div><div class="sn">Los 4 de Fase 1 se mantienen exactamente igual</div></div>
+      <div class="sd"><div class="d">igual</div></div>
+    </div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(240,180,41,.1)">☕</div>
+      <div><div class="sn">Cafeína — 200mg (o café solo)</div><div class="sno">El único estimulante con evidencia ++++ en deporte. Mejora potencia, velocidad de reacción y resistencia a la fatiga. Úsala solo en días de partido o gym clave — si la tomas siempre, creas tolerancia y pierde efecto.</div></div>
+      <div class="sd"><div class="d">200mg</div><div class="t">45-60 min antes</div><div class="t">partido o gym</div></div>
+    </div>
+    <div class="sci" style="margin-top:8px">🔬 Cafeína: evidencia ++++ (ISSN position stand). Omega-3 (opcional si no comes pescado azul 3x semana): ++ en recuperación muscular (Smith et al., 2011).</div>
+  </div>
+
+  <div class="fase">
+    <div class="fase-hdr">
+      <div><div class="fase-name">Fase 3 — Potencia final</div><div class="fase-when">Marzo → Junio 2027 · 3 meses</div></div>
+      <div class="fase-tag ft-last">FINAL</div>
+    </div>
+    <div class="tip">El stack se mantiene. Solo añades D3 si no tomas sol (en Madrid de marzo a junio con buena exposición solar no suele ser necesaria).</div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(240,180,41,.12)">⚡</div>
+      <div><div class="sn">Creatina + Proteína + Colágeno + Magnesio + Cafeína</div><div class="sno">El stack completo de fase 2 se mantiene igual</div></div>
+      <div class="sd"><div class="d">igual</div></div>
+    </div>
+    <div class="supp">
+      <div class="sic" style="background:rgba(34,197,94,.12)">🦴</div>
+      <div><div class="sn">Vitamina D3 — 2000 UI (solo si poco sol)</div><div class="sno">Si entrenas siempre de noche y no tomas sol regularmente: 2000 UI con comida grasa. Si tomas sol: no hace falta.</div></div>
+      <div class="sd"><div class="d">2000 UI</div><div class="t">si poca exposición</div><div class="t">solar</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="card-title"><div class="cdot" style="background:var(--green)"></div>Resumen — Stack máximo en cualquier momento</div>
+    <div class="ok">Como máximo en Fase 3: <strong>4 productos + café</strong>. Nada más.</div>
+    <div class="row"><div><div class="rn">Creatina monohidrato 5g</div></div><div class="rv">desayuno · siempre</div></div>
+    <div class="row"><div><div class="rn">Proteína Whey SG 25-30g</div><div class="rno">Solo si no llegas a 185g con la dieta</div></div><div class="rv">post-gym/partido</div></div>
+    <div class="row"><div><div class="rn">Colágeno 15g + Vitamina C 200mg</div></div><div class="rv">30 min pre-gym</div></div>
+    <div class="row"><div><div class="rn">Magnesio bisglicinato 300mg</div></div><div class="rv">antes de dormir</div></div>
+    <div class="row"><div><div class="rn">Cafeína / café (Fase 2 en adelante)</div></div><div class="rv">partido o gym clave</div></div>
+    <div class="row"><div><div class="rn">Vitamina D3 2000 UI (Fase 3, si no hay sol)</div></div><div class="rv">con comida grasa</div></div>
+  </div>
+</div>
+
+
+<!-- ═══ DIARIO SEMANAL ═══ -->
+<div class="page" id="page-log">
+  <div class="day-hero">
+    <div class="dh-icon">📓</div>
+    <div><div class="dh-name">Diario Semanal</div><div class="dh-sub">Registra lo que haces · Exporta cuando quieras</div></div>
+    <div class="dh-badge b-active">LOG</div>
+  </div>
+
+  <!-- SELECTOR DE SEMANA -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button onclick="changeWeek(-1)" style="background:var(--border);color:var(--txt);padding:6px 12px;border-radius:6px;font-size:.8rem">← Anterior</button>
+      <div id="week-label" style="font-size:.82rem;font-weight:700;color:var(--accent);text-align:center"></div>
+      <button onclick="changeWeek(1)" style="background:var(--border);color:var(--txt);padding:6px 12px;border-radius:6px;font-size:.8rem">Siguiente →</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button onclick="exportJSON()" style="flex:1;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);padding:9px;border-radius:8px;font-size:.75rem;font-weight:700">⬇ Exportar JSON</button>
+      <button onclick="clearWeek()" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25);padding:9px 12px;border-radius:8px;font-size:.75rem;font-weight:700">🗑 Borrar semana</button>
+    </div>
+  </div>
+
+  <!-- ENTRADAS POR DÍA -->
+  <div id="log-days"></div>
+</div>
+
+<style>
+.log-day{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.log-day-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+.log-day-hdr:hover{background:rgba(255,255,255,.02)}
+.log-day-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.log-day-name{font-size:.82rem;font-weight:700;flex:1}
+.log-day-status{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px}
+.log-day-body{display:none;padding:0 14px 14px}
+.log-day.open .log-day-body{display:block}
+.log-day.open .log-chev{transform:rotate(180deg)}
+.log-chev{font-size:.62rem;color:var(--txt3);transition:transform .2s}
+
+.log-field{margin-bottom:12px}
+.log-label{font-size:.67rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2);margin-bottom:5px;display:block}
+.log-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--txt);font-family:var(--font);resize:none;outline:none;line-height:1.4}
+.log-input:focus{border-color:var(--accent)}
+.log-save-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:7px;padding:10px;font-size:.78rem;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .15s}
+.log-save-btn:hover{opacity:.85}
+.log-save-btn.saved{background:var(--green)}
+
+.pain-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pain-label{font-size:.72rem;color:var(--txt2);flex:1}
+.pain-btns{display:flex;gap:4px}
+.pain-btn{width:28px;height:28px;border-radius:5px;font-size:.68rem;font-weight:700;background:var(--border);color:var(--txt2);border:1px solid transparent;transition:all .15s;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pain-btn.sel-0,.pain-btn.sel-1,.pain-btn.sel-2,.pain-btn.sel-3{background:rgba(34,197,94,.2);color:var(--green);border-color:rgba(34,197,94,.4)}
+.pain-btn.sel-4,.pain-btn.sel-5,.pain-btn.sel-6{background:rgba(240,180,41,.2);color:var(--gold);border-color:rgba(240,180,41,.4)}
+.pain-btn.sel-7,.pain-btn.sel-8,.pain-btn.sel-9,.pain-btn.sel-10{background:rgba(239,68,68,.2);color:var(--red);border-color:rgba(239,68,68,.4)}
+
+.ex-check-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.ex-check-row:last-child{border-bottom:none}
+.ex-check-name{font-size:.75rem;flex:1;color:var(--txt)}
+.ex-check-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s;flex-shrink:0}
+.ex-check-box.checked{background:var(--green);border-color:var(--green);color:white}
+</style>
+
+<!-- IA PANEL -->
+<div id="ia-panel">
+  <button id="ia-close" onclick="toggleIA()">✕ cerrar</button>
+  <div id="ia-out">👋 Hola Iván. Soy tu preparador integrado. Pregúntame lo que necesites.</div>
+  <div class="ia-row">
+    <textarea id="ia-input" rows="2" placeholder="¿Cuándo empiezo el colágeno? / ¿Por qué sin sprint el jueves?..." onkeydown="handleEnter(event)"></textarea>
+    <button id="ia-send" onclick="sendIA()">Enviar</button>
+  </div>
+</div>
+
+<script>
+const DAYS=['lun','mar','mie','jue','vie','sab','dom','obj','supl','log'];
+function showDay(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const i=DAYS.indexOf(id);
+  if(i>=0)document.querySelectorAll('.dtab')[i].classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='log')renderLog();
+}
+document.querySelectorAll('.sblock').forEach(sb=>{
+  const h=sb.querySelector('.sblock-hdr');
+  if(h)h.addEventListener('click',()=>sb.classList.toggle('open'));
+});
+function toggleIA(){document.getElementById('ia-panel').classList.toggle('visible')}
+function handleEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendIA()}}
+
+// ══════════════════════════════════════════
+// DIARIO SEMANAL — ALMACENAMIENTO LOCAL
+// ══════════════════════════════════════════
+
+const DAY_NAMES = {
+  lun:{label:'Lunes',color:'#8898b0',tipo:'Descanso',dot:'#4a5d78'},
+  mar:{label:'Martes',color:'#a78bfa',tipo:'Gym — Fuerza',dot:'#a78bfa'},
+  mie:{label:'Miércoles',color:'#f0b429',tipo:'Activo',dot:'#f0b429'},
+  jue:{label:'Jueves',color:'#a78bfa',tipo:'Gym — Superior',dot:'#a78bfa'},
+  vie:{label:'Viernes',color:'#a78bfa',tipo:'Sprint + Prevención',dot:'#a78bfa'},
+  sab:{label:'Sábado',color:'#8898b0',tipo:'Pre-partido',dot:'#4a5d78'},
+  dom:{label:'Domingo',color:'#22c55e',tipo:'Partido',dot:'#22c55e'},
+};
+
+const GYM_EXERCISES = {
+  mar:['Sentadilla trasera','RDL (Peso Muerto Rumano)','Hip Thrust','Prensa unilateral','Box Jump','CMJ','Kettlebell Swing','Ab Wheel','Hanging Leg Raise','Copenhagen Plank'],
+  jue:['Press Banca','Remo con barra','Press Militar','Dominadas / Jalón','Pallof Press','Cable Crunch','Cuello / Antebrazo'],
+  vie:['Sprint 20m (5 series)','Sprint 30m (4 series)','Nordic Curl','Isométrico isquio','Isométrico tobillo','Calf raise excéntrico','Propriocepción tobillo'],
+};
+
+let currentWeekOffset = 0;
+
+function getWeekKey(offset=0){
+  const d = new Date();
+  d.setDate(d.getDate() - d.getDay() + 1 + offset*7);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `week_${y}_${m}_${day}`;
+}
+
+function getWeekLabel(offset=0){
+  const d = new Date();
+  d.setDate(d.getDate() - d.getDay() + 1 + offset*7);
+  const end = new Date(d); end.setDate(d.getDate()+6);
+  const fmt = dt => `${dt.getDate()}/${dt.getMonth()+1}`;
+  return `Semana ${fmt(d)} — ${fmt(end)} · ${d.getFullYear()}`;
+}
+
+function loadWeekData(offset=0){
+  const key = getWeekKey(offset);
+  try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; }
+}
+
+function saveWeekData(data, offset=0){
+  const key = getWeekKey(offset);
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function changeWeek(dir){
+  currentWeekOffset += dir;
+  renderLog();
+}
+
+function clearWeek(){
+  if(!confirm('¿Borrar todos los registros de esta semana?')) return;
+  const key = getWeekKey(currentWeekOffset);
+  localStorage.removeItem(key);
+  renderLog();
+}
+
+function exportJSON(){
+  // Exporta TODAS las semanas guardadas
+  const allData = {};
+  for(let i=0; i<localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith('week_')){
+      try{ allData[k] = JSON.parse(localStorage.getItem(k)); }catch(e){}
+    }
+  }
+  const json = JSON.stringify({
+    exportDate: new Date().toISOString(),
+    athlete:{nombre:'Central Élite',posicion:'Central diestro',peso_ref_kg:84,altura_cm:186},
+    semanas: allData
+  }, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `central-elite-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderLog(){
+  document.getElementById('week-label').textContent = getWeekLabel(currentWeekOffset);
+  const data = loadWeekData(currentWeekOffset);
+  const container = document.getElementById('log-days');
+  container.innerHTML = '';
+
+  Object.entries(DAY_NAMES).forEach(([dayKey, dayInfo])=>{
+    const dayData = data[dayKey] || {};
+    const hasData = Object.keys(dayData).length > 0;
+    const div = document.createElement('div');
+    div.className = 'log-day';
+    div.innerHTML = `
+      <div class="log-day-hdr" onclick="this.parentElement.classList.toggle('open')">
+        <div class="log-day-dot" style="background:${dayInfo.dot}"></div>
+        <div class="log-day-name">${dayInfo.label} <span style="color:var(--txt2);font-weight:400;font-size:.7rem">· ${dayInfo.tipo}</span></div>
+        <span class="log-day-status" style="${hasData?'background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3)':'background:rgba(74,93,120,.1);color:var(--txt3);border:1px solid var(--border)'}">
+          ${hasData?'✅ Con datos':'Sin registrar'}
+        </span>
+        <span class="log-chev">▼</span>
+      </div>
+      <div class="log-day-body" id="body-${dayKey}"></div>
+    `;
+    container.appendChild(div);
+    renderDayBody(dayKey, dayData, dayInfo);
+  });
+}
+
+function renderDayBody(dayKey, dayData, dayInfo){
+  const body = document.getElementById(`body-${dayKey}`);
+  const isGym = ['mar','jue','vie'].includes(dayKey);
+  const isMatch = dayKey === 'dom';
+
+  let html = '';
+
+  // DOLOR (todos los días)
+  html += `<div class="log-field" style="margin-top:4px">
+    <label class="log-label">🛡 Dolor isquio izq. (0-10)</label>
+    <div class="pain-row"><div class="pain-label">Isquio izquierdo</div><div class="pain-btns" id="pain-isq-${dayKey}"></div></div>
+    <label class="log-label" style="margin-top:8px">🛡 Dolor aductor izq. (0-10)</label>
+    <div class="pain-row"><div class="pain-label">Aductor izquierdo</div><div class="pain-btns" id="pain-adu-${dayKey}"></div></div>
+  </div>`;
+
+  // EJERCICIOS (días de gym)
+  if(isGym && GYM_EXERCISES[dayKey]){
+    html += `<div class="log-field"><label class="log-label">✅ Ejercicios completados</label><div id="exlist-${dayKey}">`;
+    GYM_EXERCISES[dayKey].forEach((ex,i)=>{
+      const checked = (dayData.ejercicios||{})[ex] || false;
+      html += `<div class="ex-check-row">
+        <span class="ex-name" style="font-size:.75rem;flex:1">${ex}</span>
+        <div class="ex-check-box ${checked?'checked':''}" onclick="toggleEx('${dayKey}','${ex}',this)">${checked?'✓':''}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // PARTIDO
+  if(isMatch){
+    const res = dayData.resultado || '';
+    html += `<div class="log-field"><label class="log-label">⚽ Resultado del partido</label>
+      <input type="text" class="log-input" placeholder="Ej: 2-1 ganamos · jugué 90 min" value="${res}"
+        onchange="updateField('${dayKey}','resultado',this.value)" style="height:38px"></div>`;
+    const mins = dayData.minutos || '';
+    html += `<div class="log-field"><label class="log-label">⏱ Minutos jugados</label>
+      <input type="number" class="log-input" placeholder="90" value="${mins}" min="0" max="120"
+        onchange="updateField('${dayKey}','minutos',this.value)" style="height:38px"></div>`;
+  }
+
+  // NOTAS LIBRES (todos)
+  const nota = dayData.nota || '';
+  html += `<div class="log-field"><label class="log-label">📝 Notas (sensaciones, qué hiciste, cómo fue)</label>
+    <textarea class="log-input" rows="3" placeholder="Cómo te sentiste, qué notaste, observaciones..."
+      onchange="updateField('${dayKey}','nota',this.value)">${nota}</textarea>
+  </div>`;
+
+  // PESO (lunes y domingos)
+  if(['lun','dom'].includes(dayKey)){
+    const peso = dayData.peso || '';
+    html += `<div class="log-field"><label class="log-label">⚖️ Peso en ayunas (kg)</label>
+      <input type="number" class="log-input" placeholder="84.0" step="0.1" value="${peso}"
+        onchange="updateField('${dayKey}','peso',this.value)" style="height:38px"></div>`;
+  }
+
+  html += `<button class="log-save-btn" id="save-${dayKey}" onclick="saveDay('${dayKey}')">💾 Guardar día</button>`;
+
+  body.innerHTML = html;
+
+  // Renderizar botones de dolor
+  ['isq','adu'].forEach(zona=>{
+    const container = document.getElementById(`pain-${zona}-${dayKey}`);
+    const field = zona==='isq'?'dolor_isq':'dolor_adu';
+    const val = dayData[field] ?? null;
+    for(let n=0;n<=10;n++){
+      const btn = document.createElement('button');
+      btn.className = `pain-btn${val===n?' sel-'+n:''}`;
+      btn.textContent = n;
+      btn.onclick = ()=>{ selectPain(dayKey, field, n, zona); };
+      container.appendChild(btn);
+    }
+  });
+}
+
+function selectPain(dayKey, field, val, zona){
+  const container = document.getElementById(`pain-${zona}-${dayKey}`);
+  container.querySelectorAll('.pain-btn').forEach((b,i)=>{
+    b.className = 'pain-btn' + (i===val?' sel-'+i:'');
+  });
+  updateField(dayKey, field, val);
+}
+
+function toggleEx(dayKey, exName, el){
+  const checked = !el.classList.contains('checked');
+  el.classList.toggle('checked', checked);
+  el.textContent = checked ? '✓' : '';
+  const data = loadWeekData(currentWeekOffset);
+  if(!data[dayKey]) data[dayKey]={};
+  if(!data[dayKey].ejercicios) data[dayKey].ejercicios={};
+  data[dayKey].ejercicios[exName] = checked;
+  saveWeekData(data, currentWeekOffset);
+}
+
+function updateField(dayKey, field, val){
+  const data = loadWeekData(currentWeekOffset);
+  if(!data[dayKey]) data[dayKey]={};
+  data[dayKey][field] = val;
+  saveWeekData(data, currentWeekOffset);
+}
+
+function saveDay(dayKey){
+  const btn = document.getElementById(`save-${dayKey}`);
+  btn.textContent = '✅ Guardado';
+  btn.classList.add('saved');
+  setTimeout(()=>{ btn.textContent='💾 Guardar día'; btn.classList.remove('saved'); }, 1500);
+}
+
+// ══════════════════════════════════════════
+// IA
+// ══════════════════════════════════════════
+
+const CTX=`Eres el preparador físico personal y nutricionista de Iván, central de fútbol semifederado, 186cm, 84kg en ayunas, Madrid, España.
+LESIONES (MÁXIMA PRIORIDAD): dos roturas isquiotibial izquierdo + dos roturas aductor izquierdo temporada pasada. Esguince tobillo derecho con resentimiento residual.
+DIETA: celíaco 100% sin gluten estricto.
+FÍSICO: algo de volumen ya, brazos y pecho se notan. Quiere que se le note que está fuerte (músculo con camiseta + volumen general) pero SIN estar tosco — objetivo 88-90kg, no más.
+OBJETIVO sep 2026 - jun 2027: cero roturas → 88-90kg masa limpia → explosividad → velocidad.
+ENTRENOS: martes, jueves, viernes (gym 21-23h). Domingo partido 11h.
+ESTRUCTURA MD: Mar=Fuerza+Explosividad+CaderaFuerza. Jue=TrenSuperior+Core+CaderaMov (MD-3, sin sprint). Vie=SprintBajoVolumen+Prevención+CaderaFuerza (MD-2).
+SUPLEMENTACIÓN FASES: Fase1(sep-nov)=Creatina+Proteína+Colágeno+VitC+Magnesio. Fase2(dic-feb)=+Cafeína selectiva. Fase3(mar-jun)=+D3 si falta sol. Nada más.
+RECOVERY: solo lo que SÍ hacer — foam roller, botas presoterapia, hidratación, sueño. Sin listas de prohibiciones.
+Responde en español, conciso y práctico. Para lesiones, sé conservador y deriva al fisio si hay duda.`;
+const hist=[];
+async function sendIA(){
+  const inp=document.getElementById('ia-input');
+  const out=document.getElementById('ia-out');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  hist.push({role:'user',content:msg});
+  out.textContent='⏳ Pensando...';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:CTX,messages:hist})});
+    const d=await r.json();
+    const reply=d.content?.find(b=>b.type==='text')?.text||'Sin respuesta.';
+    hist.push({role:'assistant',content:reply});
+    out.textContent=reply;
+    out.scrollTop=out.scrollHeight;
+  }catch(e){out.textContent='❌ Error de conexión.'}
+}
+</script>
+</body>
+</html>
